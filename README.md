@@ -1,4 +1,4 @@
-# Rich Code Navigation Indexed Code Samples
+# Index Code Samples
 
 This is a sample code base used to validate indexing.
 
