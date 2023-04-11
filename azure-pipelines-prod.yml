@@ -19,18 +19,24 @@ pool:
   demands:
   - ImageOverride -equals AzurePipelinesWindows2019compliant
 
-steps:
-- task: NodeTool@0
-  displayName: 'Use Node 10.x'
-  inputs:
-    versionSpec: 10.x
+variables:
+  CodeIndex.Enabled: true
+  CodeIndex.Languages: 'csharp' # One or more languages separated by commas. See below for language options
+  CodeIndex.AutoBinlogs: true # If your build is not already producing binlogs, uncomment this line
+  CodeIndex.Debug: true # If you are experiencing issues, you can turn on this flag to provide us with more logging to help debug!
 
-- task: MS-RichCodeNav.Indexer.build-task.RichCodeNavIndexer@0
-  displayName: Rich Code Navigation Upload to Production
+steps:
+- task: NuGetCommand@2
+  displayName: NuGet restore
   inputs:
-    languages: 'csharp,typescript,java,cpp'
-    githubServiceConnection: 'jepetty'
-    environment: production
-    isPrivateFeed: false
-  continueOnError: true
+    restoreSolution: "**\\*.sln"
+    feedsToUse: "config"
+    nugetConfigPath: "csharp/nuget.config"
+    
+- task: DotNetCoreCLI@2
+  displayName: .NET Build
+  inputs:
+    command: 'build'
+    projects: 'csharp\TesterGame.sln'
+    arguments: '--no-restore'
 
